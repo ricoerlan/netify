@@ -4,8 +4,21 @@ import '../../core/entities/netify_config.dart';
 import '../pages/netify_panel.dart';
 import 'netify_bubble.dart';
 
+/// A wrapper widget that adds Netify entry point to your app.
+///
+/// Wrap your home widget with this to show the floating bubble.
+///
+/// Example:
+/// ```dart
+/// NetifyWrapper(
+///   child: HomePage(),
+/// )
+/// ```
 class NetifyWrapper extends StatelessWidget {
+  /// The child widget to wrap.
   final Widget child;
+
+  /// Entry mode for accessing Netify panel.
   final NetifyEntryMode entryMode;
 
   const NetifyWrapper({
@@ -44,4 +57,3 @@ class NetifyWrapper extends StatelessWidget {
     return result;
   }
 }
-

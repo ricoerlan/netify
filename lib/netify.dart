@@ -1,3 +1,8 @@
+/// Netify - A lightweight, debug-only network inspector for Flutter apps.
+///
+/// This library provides network inspection capabilities for Flutter apps
+/// using Dio HTTP client. Features include request/response logging,
+/// favorites, dark mode, search, export, and share as image.
 library netify;
 
 export 'src/core/entities/network_log.dart';

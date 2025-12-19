@@ -1,8 +1,17 @@
 import 'dart:convert';
 
+/// Represents a captured HTTP network request/response log.
+///
+/// Contains all details about the request including URL, method, headers,
+/// body, status code, timing, and any errors.
 class NetworkLog {
+  /// Unique identifier for this log entry.
   final String id;
+
+  /// HTTP method (GET, POST, PUT, DELETE, etc.)
   final String method;
+
+  /// Full request URL including query parameters.
   final String url;
   final int? statusCode;
   final String? statusMessage;
@@ -33,7 +42,8 @@ class NetworkLog {
     this.duration,
   });
 
-  bool get isSuccess => statusCode != null && statusCode! >= 200 && statusCode! < 300;
+  bool get isSuccess =>
+      statusCode != null && statusCode! >= 200 && statusCode! < 300;
   bool get isError => statusCode != null && statusCode! >= 400;
   bool get isPending => statusCode == null && error == null;
 
@@ -59,8 +69,20 @@ class NetworkLog {
   }
 
   String get formattedTimestamp {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     final month = months[requestTime.month - 1];
     final day = requestTime.day.toString().padLeft(2, '0');
     final year = requestTime.year;
@@ -132,28 +154,28 @@ class NetworkLog {
       responseHeaders: json['responseHeaders'] as Map<String, dynamic>?,
       responseBody: json['responseBody'],
       requestTime: DateTime.parse(json['requestTime'] as String),
-      responseTime: json['responseTime'] != null 
-          ? DateTime.parse(json['responseTime'] as String) 
+      responseTime: json['responseTime'] != null
+          ? DateTime.parse(json['responseTime'] as String)
           : null,
       responseSize: json['responseSize'] as int?,
       error: json['error'] as String?,
-      duration: json['duration'] != null 
-          ? Duration(milliseconds: json['duration'] as int) 
+      duration: json['duration'] != null
+          ? Duration(milliseconds: json['duration'] as int)
           : null,
     );
   }
 
   String toCurl() {
     final buffer = StringBuffer('curl');
-    
+
     buffer.write(' -X $method');
-    
+
     if (requestHeaders != null) {
       requestHeaders!.forEach((key, value) {
         buffer.write(" -H '$key: $value'");
       });
     }
-    
+
     if (requestBody != null) {
       String bodyStr;
       if (requestBody is Map || requestBody is List) {
@@ -163,9 +185,9 @@ class NetworkLog {
       }
       buffer.write(" -d '$bodyStr'");
     }
-    
+
     buffer.write(" '$url'");
-    
+
     return buffer.toString();
   }
 }

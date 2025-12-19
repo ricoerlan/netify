@@ -69,10 +69,11 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
             ],
           ),
           const SizedBox(height: NetifySpacing.sm),
-          
+
           // Meta info row
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: NetifySpacing.sm, vertical: NetifySpacing.xs),
+            padding: const EdgeInsets.symmetric(
+                horizontal: NetifySpacing.sm, vertical: NetifySpacing.xs),
             decoration: BoxDecoration(
               color: NetifyColors.surface,
               borderRadius: BorderRadius.circular(NetifyRadius.sm),
@@ -81,8 +82,11 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildMetaItem(Icons.schedule, widget.log.formattedRequestTime),
-                _buildMetaItem(Icons.straighten, widget.log.formattedResponseSize),
-                _buildMetaItem(Icons.timer_outlined, widget.log.formattedDuration, isHighlight: true),
+                _buildMetaItem(
+                    Icons.straighten, widget.log.formattedResponseSize),
+                _buildMetaItem(
+                    Icons.timer_outlined, widget.log.formattedDuration,
+                    isHighlight: true),
               ],
             ),
           ),
@@ -134,7 +138,7 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
               ],
             ),
           ),
-          
+
           if (widget.log.error != null || widget.log.isError) ...[
             const SizedBox(height: NetifySpacing.sm),
             Container(
@@ -143,7 +147,8 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
               decoration: BoxDecoration(
                 color: NetifyColors.error.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(NetifyRadius.md),
-                border: Border.all(color: NetifyColors.error.withValues(alpha: 0.2)),
+                border: Border.all(
+                    color: NetifyColors.error.withValues(alpha: 0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +162,9 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.log.error ?? widget.log.statusMessage ?? _getStatusPhrase(widget.log.statusCode ?? 0),
+                    widget.log.error ??
+                        widget.log.statusMessage ??
+                        _getStatusPhrase(widget.log.statusCode ?? 0),
                     style: NetifyTextStyles.bodySmall.copyWith(
                       fontSize: 10,
                       color: NetifyColors.textPrimary,
@@ -168,7 +175,8 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
             ),
           ],
 
-          if (widget.log.requestBody != null || (widget.log.requestHeaders?.isNotEmpty ?? false)) ...[
+          if (widget.log.requestBody != null ||
+              (widget.log.requestHeaders?.isNotEmpty ?? false)) ...[
             const SizedBox(height: NetifySpacing.sm),
             _buildSection(
               title: 'REQUEST',
@@ -177,7 +185,8 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
             ),
           ],
 
-          if (widget.log.responseBody != null || (widget.log.responseHeaders?.isNotEmpty ?? false)) ...[
+          if (widget.log.responseBody != null ||
+              (widget.log.responseHeaders?.isNotEmpty ?? false)) ...[
             const SizedBox(height: NetifySpacing.sm),
             _buildSection(
               title: 'RESPONSE',
@@ -185,7 +194,7 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
               body: widget.log.responseBody,
             ),
           ],
-          
+
           // Footer Watermark
           const SizedBox(height: NetifySpacing.md),
           Center(
@@ -229,29 +238,30 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
             ),
             const SizedBox(height: 2),
             ...headers.entries.take(3).map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 2),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${e.key}: ',
-                    style: NetifyTextStyles.bodySmall.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: NetifyColors.textSecondary,
-                      fontSize: 10,
-                    ),
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${e.key}: ',
+                        style: NetifyTextStyles.bodySmall.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: NetifyColors.textSecondary,
+                          fontSize: 10,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          e.value.toString(),
+                          style:
+                              NetifyTextStyles.bodySmall.copyWith(fontSize: 10),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: Text(
-                      e.value.toString(),
-                      style: NetifyTextStyles.bodySmall.copyWith(fontSize: 10),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                )),
             if (headers.length > 3)
               Text(
                 '... (+${headers.length - 3} more)',
@@ -309,7 +319,8 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
     }
   }
 
-  Widget _buildMetaItem(IconData icon, String value, {bool isHighlight = false}) {
+  Widget _buildMetaItem(IconData icon, String value,
+      {bool isHighlight = false}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -323,7 +334,8 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
           value,
           style: NetifyTextStyles.labelSmall.copyWith(
             fontSize: 10,
-            color: isHighlight ? NetifyColors.success : NetifyColors.textSecondary,
+            color:
+                isHighlight ? NetifyColors.success : NetifyColors.textSecondary,
             fontWeight: isHighlight ? FontWeight.w600 : FontWeight.w500,
           ),
         ),
@@ -334,7 +346,7 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
   Widget _buildStatusBadge() {
     final color = NetifyColors.getStatusColor(widget.log.statusCode);
     String statusText = 'Pending';
-    
+
     if (widget.log.statusCode != null) {
       final code = widget.log.statusCode!;
       final message = widget.log.statusMessage ?? _getStatusPhrase(code);
@@ -363,28 +375,50 @@ class _LogShareSnapshotState extends State<LogShareSnapshot> {
 
   String _getStatusPhrase(int statusCode) {
     switch (statusCode) {
-      case 200: return 'OK';
-      case 201: return 'Created';
-      case 202: return 'Accepted';
-      case 204: return 'No Content';
-      case 301: return 'Moved Permanently';
-      case 302: return 'Found';
-      case 304: return 'Not Modified';
-      case 400: return 'Bad Request';
-      case 401: return 'Unauthorized';
-      case 403: return 'Forbidden';
-      case 404: return 'Not Found';
-      case 405: return 'Method Not Allowed';
-      case 408: return 'Request Timeout';
-      case 409: return 'Conflict';
-      case 422: return 'Unprocessable Entity';
-      case 429: return 'Too Many Requests';
-      case 500: return 'Internal Server Error';
-      case 501: return 'Not Implemented';
-      case 502: return 'Bad Gateway';
-      case 503: return 'Service Unavailable';
-      case 504: return 'Gateway Timeout';
-      default: return '';
+      case 200:
+        return 'OK';
+      case 201:
+        return 'Created';
+      case 202:
+        return 'Accepted';
+      case 204:
+        return 'No Content';
+      case 301:
+        return 'Moved Permanently';
+      case 302:
+        return 'Found';
+      case 304:
+        return 'Not Modified';
+      case 400:
+        return 'Bad Request';
+      case 401:
+        return 'Unauthorized';
+      case 403:
+        return 'Forbidden';
+      case 404:
+        return 'Not Found';
+      case 405:
+        return 'Method Not Allowed';
+      case 408:
+        return 'Request Timeout';
+      case 409:
+        return 'Conflict';
+      case 422:
+        return 'Unprocessable Entity';
+      case 429:
+        return 'Too Many Requests';
+      case 500:
+        return 'Internal Server Error';
+      case 501:
+        return 'Not Implemented';
+      case 502:
+        return 'Bad Gateway';
+      case 503:
+        return 'Service Unavailable';
+      case 504:
+        return 'Gateway Timeout';
+      default:
+        return '';
     }
   }
 }

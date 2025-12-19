@@ -32,11 +32,11 @@ class LogRepositoryImpl implements LogRepository {
   @override
   void addLog(NetworkLog log) {
     _logs.insert(0, log);
-    
+
     if (_logs.length > config.maxLogs) {
       _logs.removeLast();
     }
-    
+
     _notifyListeners();
   }
 
@@ -58,31 +58,31 @@ class LogRepositoryImpl implements LogRepository {
   @override
   List<NetworkLog> searchLogs(String query) {
     if (query.isEmpty) return logs;
-    
+
     final lowerQuery = query.toLowerCase();
     return _logs.where((log) {
       // Search in URL
       if (log.url.toLowerCase().contains(lowerQuery)) return true;
-      
+
       // Search in method
       if (log.method.toLowerCase().contains(lowerQuery)) return true;
-      
+
       // Search in status code
       if (log.statusCode?.toString().contains(lowerQuery) ?? false) return true;
-      
+
       // Search in request body
       if (_searchInBody(log.requestBody, lowerQuery)) return true;
-      
+
       // Search in response body
       if (_searchInBody(log.responseBody, lowerQuery)) return true;
-      
+
       return false;
     }).toList();
   }
 
   bool _searchInBody(dynamic body, String query) {
     if (body == null) return false;
-    
+
     String bodyString;
     if (body is String) {
       bodyString = body;
@@ -95,7 +95,7 @@ class LogRepositoryImpl implements LogRepository {
     } else {
       bodyString = body.toString();
     }
-    
+
     return bodyString.toLowerCase().contains(query);
   }
 
@@ -113,7 +113,7 @@ class LogRepositoryImpl implements LogRepository {
   bool isFavorite(String logId) => _favoriteIds.contains(logId);
 
   @override
-  List<NetworkLog> get favoriteLogs => 
+  List<NetworkLog> get favoriteLogs =>
       _logs.where((log) => _favoriteIds.contains(log.id)).toList();
 
   @override

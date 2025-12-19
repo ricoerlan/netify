@@ -74,7 +74,7 @@ class _NetifyBubbleState extends State<NetifyBubble>
       initialData: Netify.logs,
       builder: (context, snapshot) {
         final count = snapshot.data?.length ?? 0;
-        
+
         // Trigger pulse animation on new requests
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _onNewRequest(count);
@@ -89,8 +89,10 @@ class _NetifyBubbleState extends State<NetifyBubble>
               if (_position == null) return;
               setState(() {
                 _position = Offset(
-                  (_position!.dx + details.delta.dx).clamp(0, screenSize.width - 56),
-                  (_position!.dy + details.delta.dy).clamp(safeArea.top, screenSize.height - 56 - safeArea.bottom),
+                  (_position!.dx + details.delta.dx)
+                      .clamp(0, screenSize.width - 56),
+                  (_position!.dy + details.delta.dy).clamp(
+                      safeArea.top, screenSize.height - 56 - safeArea.bottom),
                 );
               });
             },
@@ -102,7 +104,9 @@ class _NetifyBubbleState extends State<NetifyBubble>
               final snapToRight = centerX > screenSize.width / 2;
               setState(() {
                 _position = Offset(
-                  snapToRight ? screenSize.width - 70 - safeArea.right : 14 + safeArea.left,
+                  snapToRight
+                      ? screenSize.width - 70 - safeArea.right
+                      : 14 + safeArea.left,
                   _position!.dy,
                 );
               });

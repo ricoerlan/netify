@@ -14,8 +14,11 @@ import 'insights_page.dart';
 import 'log_detail_page.dart';
 
 enum StatusFilter { all, success, clientError, serverError }
+
 enum MethodFilter { all, get, post, put, patch, delete }
+
 enum SortOption { newest, oldest, slowest, fastest, largest, smallest }
+
 enum ViewMode { list, grouped }
 
 class NetifyPanel extends StatefulWidget {
@@ -42,7 +45,7 @@ class _NetifyPanelState extends State<NetifyPanel> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    
+
     return StreamBuilder<bool>(
       stream: NetifyThemeController().themeStream,
       initialData: NetifyThemeController().isDarkMode,
@@ -60,18 +63,26 @@ class _NetifyPanelState extends State<NetifyPanel> {
             actions: [
               IconButton(
                 icon: Icon(
-                  _viewMode == ViewMode.grouped ? Icons.view_list_rounded : Icons.folder_outlined,
+                  _viewMode == ViewMode.grouped
+                      ? Icons.view_list_rounded
+                      : Icons.folder_outlined,
                   color: NetifyColors.textPrimary,
                 ),
                 onPressed: () => setState(() {
-                  _viewMode = _viewMode == ViewMode.list ? ViewMode.grouped : ViewMode.list;
+                  _viewMode = _viewMode == ViewMode.list
+                      ? ViewMode.grouped
+                      : ViewMode.list;
                 }),
-                tooltip: _viewMode == ViewMode.grouped ? 'List View' : 'Group by Domain',
+                tooltip: _viewMode == ViewMode.grouped
+                    ? 'List View'
+                    : 'Group by Domain',
               ),
               IconButton(
                 icon: Icon(
                   Icons.filter_list,
-                  color: _hasActiveFilters ? NetifyColors.primary : NetifyColors.textPrimary,
+                  color: _hasActiveFilters
+                      ? NetifyColors.primary
+                      : NetifyColors.textPrimary,
                 ),
                 onPressed: _showFilterModal,
                 tooltip: 'Filter',
@@ -100,7 +111,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     value: 'insights',
                     child: Row(
                       children: [
-                        Icon(Icons.insights_rounded, size: 20, color: NetifyColors.textSecondary),
+                        Icon(Icons.insights_rounded,
+                            size: 20, color: NetifyColors.textSecondary),
                         const SizedBox(width: NetifySpacing.md),
                         Text('Insights', style: NetifyTextStyles.bodyMedium),
                       ],
@@ -110,7 +122,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     value: 'export',
                     child: Row(
                       children: [
-                        Icon(Icons.share, size: 20, color: NetifyColors.textSecondary),
+                        Icon(Icons.share,
+                            size: 20, color: NetifyColors.textSecondary),
                         const SizedBox(width: NetifySpacing.md),
                         Text('Export', style: NetifyTextStyles.bodyMedium),
                       ],
@@ -121,7 +134,9 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     child: Row(
                       children: [
                         Icon(
-                          NetifyColors.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                          NetifyColors.isDarkMode
+                              ? Icons.light_mode_rounded
+                              : Icons.dark_mode_rounded,
                           size: 20,
                           color: NetifyColors.textSecondary,
                         ),
@@ -138,9 +153,12 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     value: 'clear',
                     child: Row(
                       children: [
-                        const Icon(Icons.delete_outline, size: 20, color: NetifyColors.error),
+                        const Icon(Icons.delete_outline,
+                            size: 20, color: NetifyColors.error),
                         const SizedBox(width: NetifySpacing.md),
-                        Text('Clear Logs', style: NetifyTextStyles.bodyMedium.copyWith(color: NetifyColors.error)),
+                        Text('Clear Logs',
+                            style: NetifyTextStyles.bodyMedium
+                                .copyWith(color: NetifyColors.error)),
                       ],
                     ),
                   ),
@@ -148,62 +166,64 @@ class _NetifyPanelState extends State<NetifyPanel> {
               ),
             ],
           ),
-      body: Column(
-        children: [
-          NetifySearchBar(
-            controller: _searchController,
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-            },
-          ),
-          Expanded(
-            child: StreamBuilder<List<NetworkLog>>(
-              stream: Netify.logsStream,
-              initialData: Netify.logs,
-              builder: (context, logsSnapshot) {
-                return StreamBuilder<Set<String>>(
-                  stream: Netify.favoritesStream,
-                  initialData: Netify.favoriteIds,
-                  builder: (context, favoritesSnapshot) {
-                    var logs = _searchQuery.isEmpty
-                        ? (logsSnapshot.data ?? [])
-                        : Netify.searchLogs(_searchQuery);
-                    
-                    logs = _applyFilters(logs);
-                    final favoriteIds = favoritesSnapshot.data ?? {};
+          body: Column(
+            children: [
+              NetifySearchBar(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              ),
+              Expanded(
+                child: StreamBuilder<List<NetworkLog>>(
+                  stream: Netify.logsStream,
+                  initialData: Netify.logs,
+                  builder: (context, logsSnapshot) {
+                    return StreamBuilder<Set<String>>(
+                      stream: Netify.favoritesStream,
+                      initialData: Netify.favoriteIds,
+                      builder: (context, favoritesSnapshot) {
+                        var logs = _searchQuery.isEmpty
+                            ? (logsSnapshot.data ?? [])
+                            : Netify.searchLogs(_searchQuery);
 
-                    if (logs.isEmpty) {
-                      return _buildEmptyState();
-                    }
+                        logs = _applyFilters(logs);
+                        final favoriteIds = favoritesSnapshot.data ?? {};
 
-                    if (_viewMode == ViewMode.grouped) {
-                      return _buildGroupedView(logs, favoriteIds, bottomPadding);
-                    }
+                        if (logs.isEmpty) {
+                          return _buildEmptyState();
+                        }
 
-                    return ListView.builder(
-                      padding: EdgeInsets.only(
-                        bottom: NetifySpacing.lg + bottomPadding,
-                      ),
-                      itemCount: logs.length,
-                      itemBuilder: (context, index) {
-                        final log = logs[index];
-                        return LogListTile(
-                          log: log,
-                          isFavorite: favoriteIds.contains(log.id),
-                          onTap: () => _openLogDetail(log),
-                          onFavoriteToggle: () => Netify.toggleFavorite(log.id),
+                        if (_viewMode == ViewMode.grouped) {
+                          return _buildGroupedView(
+                              logs, favoriteIds, bottomPadding);
+                        }
+
+                        return ListView.builder(
+                          padding: EdgeInsets.only(
+                            bottom: NetifySpacing.lg + bottomPadding,
+                          ),
+                          itemCount: logs.length,
+                          itemBuilder: (context, index) {
+                            final log = logs[index];
+                            return LogListTile(
+                              log: log,
+                              isFavorite: favoriteIds.contains(log.id),
+                              onTap: () => _openLogDetail(log),
+                              onFavoriteToggle: () =>
+                                  Netify.toggleFavorite(log.id),
+                            );
+                          },
                         );
                       },
                     );
                   },
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
-          ],
-        ),
         );
       },
     );
@@ -240,16 +260,18 @@ class _NetifyPanelState extends State<NetifyPanel> {
     );
   }
 
-  Widget _buildGroupedView(List<NetworkLog> logs, Set<String> favoriteIds, double bottomPadding) {
+  Widget _buildGroupedView(
+      List<NetworkLog> logs, Set<String> favoriteIds, double bottomPadding) {
     final groupedLogs = <String, List<NetworkLog>>{};
-    
+
     for (final log in logs) {
       final domain = _extractDomain(log.url);
       groupedLogs.putIfAbsent(domain, () => []).add(log);
     }
 
     final sortedDomains = groupedLogs.keys.toList()
-      ..sort((a, b) => groupedLogs[b]!.length.compareTo(groupedLogs[a]!.length));
+      ..sort(
+          (a, b) => groupedLogs[b]!.length.compareTo(groupedLogs[a]!.length));
 
     return ListView.builder(
       padding: EdgeInsets.only(bottom: NetifySpacing.lg + bottomPadding),
@@ -257,7 +279,7 @@ class _NetifyPanelState extends State<NetifyPanel> {
       itemBuilder: (context, index) {
         final domain = sortedDomains[index];
         final domainLogs = groupedLogs[domain]!;
-        
+
         return _DomainGroup(
           domain: domain,
           logs: domainLogs,
@@ -278,8 +300,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
     }
   }
 
-  bool get _hasActiveFilters => 
-      _statusFilter != StatusFilter.all || 
+  bool get _hasActiveFilters =>
+      _statusFilter != StatusFilter.all ||
       _methodFilter != MethodFilter.all ||
       _sortOption != SortOption.newest;
 
@@ -289,7 +311,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
       backgroundColor: NetifyColors.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(NetifyRadius.xl)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(NetifyRadius.xl)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -304,7 +327,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Filter & Sort', style: NetifyTextStyles.appBarTitle),
+                        Text('Filter & Sort',
+                            style: NetifyTextStyles.appBarTitle),
                         if (_hasActiveFilters)
                           TextButton(
                             onPressed: () {
@@ -326,12 +350,18 @@ class _NetifyPanelState extends State<NetifyPanel> {
                       spacing: NetifySpacing.sm,
                       runSpacing: NetifySpacing.sm,
                       children: [
-                        _buildSortChip('Newest', SortOption.newest, setModalState),
-                        _buildSortChip('Oldest', SortOption.oldest, setModalState),
-                        _buildSortChip('Slowest', SortOption.slowest, setModalState),
-                        _buildSortChip('Fastest', SortOption.fastest, setModalState),
-                        _buildSortChip('Largest', SortOption.largest, setModalState),
-                        _buildSortChip('Smallest', SortOption.smallest, setModalState),
+                        _buildSortChip(
+                            'Newest', SortOption.newest, setModalState),
+                        _buildSortChip(
+                            'Oldest', SortOption.oldest, setModalState),
+                        _buildSortChip(
+                            'Slowest', SortOption.slowest, setModalState),
+                        _buildSortChip(
+                            'Fastest', SortOption.fastest, setModalState),
+                        _buildSortChip(
+                            'Largest', SortOption.largest, setModalState),
+                        _buildSortChip(
+                            'Smallest', SortOption.smallest, setModalState),
                       ],
                     ),
                     const SizedBox(height: NetifySpacing.lg),
@@ -340,20 +370,36 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     Wrap(
                       spacing: NetifySpacing.sm,
                       children: [
-                        _buildFilterChip('All', StatusFilter.all, _statusFilter == StatusFilter.all, (selected) {
+                        _buildFilterChip('All', StatusFilter.all,
+                            _statusFilter == StatusFilter.all, (selected) {
                           setModalState(() => _statusFilter = StatusFilter.all);
                           setState(() {});
                         }),
-                        _buildFilterChip('2xx Success', StatusFilter.success, _statusFilter == StatusFilter.success, (selected) {
-                          setModalState(() => _statusFilter = selected ? StatusFilter.success : StatusFilter.all);
+                        _buildFilterChip('2xx Success', StatusFilter.success,
+                            _statusFilter == StatusFilter.success, (selected) {
+                          setModalState(() => _statusFilter = selected
+                              ? StatusFilter.success
+                              : StatusFilter.all);
                           setState(() {});
                         }, color: NetifyColors.success),
-                        _buildFilterChip('4xx Client Error', StatusFilter.clientError, _statusFilter == StatusFilter.clientError, (selected) {
-                          setModalState(() => _statusFilter = selected ? StatusFilter.clientError : StatusFilter.all);
+                        _buildFilterChip(
+                            '4xx Client Error',
+                            StatusFilter.clientError,
+                            _statusFilter == StatusFilter.clientError,
+                            (selected) {
+                          setModalState(() => _statusFilter = selected
+                              ? StatusFilter.clientError
+                              : StatusFilter.all);
                           setState(() {});
                         }, color: NetifyColors.warning),
-                        _buildFilterChip('5xx Server Error', StatusFilter.serverError, _statusFilter == StatusFilter.serverError, (selected) {
-                          setModalState(() => _statusFilter = selected ? StatusFilter.serverError : StatusFilter.all);
+                        _buildFilterChip(
+                            '5xx Server Error',
+                            StatusFilter.serverError,
+                            _statusFilter == StatusFilter.serverError,
+                            (selected) {
+                          setModalState(() => _statusFilter = selected
+                              ? StatusFilter.serverError
+                              : StatusFilter.all);
                           setState(() {});
                         }, color: NetifyColors.error),
                       ],
@@ -364,24 +410,34 @@ class _NetifyPanelState extends State<NetifyPanel> {
                     Wrap(
                       spacing: NetifySpacing.sm,
                       children: [
-                        _buildFilterChip('All', MethodFilter.all, _methodFilter == MethodFilter.all, (selected) {
+                        _buildFilterChip('All', MethodFilter.all,
+                            _methodFilter == MethodFilter.all, (selected) {
                           setModalState(() => _methodFilter = MethodFilter.all);
                           setState(() {});
                         }),
-                        _buildFilterChip('GET', MethodFilter.get, _methodFilter == MethodFilter.get, (selected) {
-                          setModalState(() => _methodFilter = selected ? MethodFilter.get : MethodFilter.all);
+                        _buildFilterChip('GET', MethodFilter.get,
+                            _methodFilter == MethodFilter.get, (selected) {
+                          setModalState(() => _methodFilter =
+                              selected ? MethodFilter.get : MethodFilter.all);
                           setState(() {});
                         }, color: NetifyColors.success),
-                        _buildFilterChip('POST', MethodFilter.post, _methodFilter == MethodFilter.post, (selected) {
-                          setModalState(() => _methodFilter = selected ? MethodFilter.post : MethodFilter.all);
+                        _buildFilterChip('POST', MethodFilter.post,
+                            _methodFilter == MethodFilter.post, (selected) {
+                          setModalState(() => _methodFilter =
+                              selected ? MethodFilter.post : MethodFilter.all);
                           setState(() {});
                         }, color: NetifyColors.primary),
-                        _buildFilterChip('PUT', MethodFilter.put, _methodFilter == MethodFilter.put, (selected) {
-                          setModalState(() => _methodFilter = selected ? MethodFilter.put : MethodFilter.all);
+                        _buildFilterChip('PUT', MethodFilter.put,
+                            _methodFilter == MethodFilter.put, (selected) {
+                          setModalState(() => _methodFilter =
+                              selected ? MethodFilter.put : MethodFilter.all);
                           setState(() {});
                         }, color: NetifyColors.warning),
-                        _buildFilterChip('DELETE', MethodFilter.delete, _methodFilter == MethodFilter.delete, (selected) {
-                          setModalState(() => _methodFilter = selected ? MethodFilter.delete : MethodFilter.all);
+                        _buildFilterChip('DELETE', MethodFilter.delete,
+                            _methodFilter == MethodFilter.delete, (selected) {
+                          setModalState(() => _methodFilter = selected
+                              ? MethodFilter.delete
+                              : MethodFilter.all);
                           setState(() {});
                         }, color: NetifyColors.error),
                       ],
@@ -397,7 +453,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
     );
   }
 
-  Widget _buildSortChip(String label, SortOption option, StateSetter setModalState) {
+  Widget _buildSortChip(
+      String label, SortOption option, StateSetter setModalState) {
     final isSelected = _sortOption == option;
     return ChoiceChip(
       label: Text(label),
@@ -417,7 +474,9 @@ class _NetifyPanelState extends State<NetifyPanel> {
     );
   }
 
-  Widget _buildFilterChip<T>(String label, T value, bool isSelected, ValueChanged<bool> onSelected, {Color? color}) {
+  Widget _buildFilterChip<T>(
+      String label, T value, bool isSelected, ValueChanged<bool> onSelected,
+      {Color? color}) {
     return FilterChip(
       label: Text(label),
       selected: isSelected,
@@ -425,11 +484,14 @@ class _NetifyPanelState extends State<NetifyPanel> {
       selectedColor: (color ?? NetifyColors.primary).withValues(alpha: 0.2),
       checkmarkColor: color ?? NetifyColors.primary,
       labelStyle: TextStyle(
-        color: isSelected ? (color ?? NetifyColors.primary) : NetifyColors.textSecondary,
+        color: isSelected
+            ? (color ?? NetifyColors.primary)
+            : NetifyColors.textSecondary,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
       ),
       side: BorderSide(
-        color: isSelected ? (color ?? NetifyColors.primary) : NetifyColors.border,
+        color:
+            isSelected ? (color ?? NetifyColors.primary) : NetifyColors.border,
       ),
     );
   }
@@ -440,7 +502,7 @@ class _NetifyPanelState extends State<NetifyPanel> {
       if (_statusFilter != StatusFilter.all) {
         final statusCode = log.statusCode;
         if (statusCode == null) return false;
-        
+
         switch (_statusFilter) {
           case StatusFilter.success:
             if (statusCode < 200 || statusCode >= 300) return false;
@@ -455,7 +517,7 @@ class _NetifyPanelState extends State<NetifyPanel> {
             break;
         }
       }
-      
+
       // Apply method filter
       if (_methodFilter != MethodFilter.all) {
         final method = log.method.toUpperCase();
@@ -479,7 +541,7 @@ class _NetifyPanelState extends State<NetifyPanel> {
             break;
         }
       }
-      
+
       return true;
     }).toList();
 
@@ -492,16 +554,20 @@ class _NetifyPanelState extends State<NetifyPanel> {
         filtered.sort((a, b) => a.requestTime.compareTo(b.requestTime));
         break;
       case SortOption.slowest:
-        filtered.sort((a, b) => (b.duration?.inMilliseconds ?? 0).compareTo(a.duration?.inMilliseconds ?? 0));
+        filtered.sort((a, b) => (b.duration?.inMilliseconds ?? 0)
+            .compareTo(a.duration?.inMilliseconds ?? 0));
         break;
       case SortOption.fastest:
-        filtered.sort((a, b) => (a.duration?.inMilliseconds ?? 0).compareTo(b.duration?.inMilliseconds ?? 0));
+        filtered.sort((a, b) => (a.duration?.inMilliseconds ?? 0)
+            .compareTo(b.duration?.inMilliseconds ?? 0));
         break;
       case SortOption.largest:
-        filtered.sort((a, b) => (b.responseSize ?? 0).compareTo(a.responseSize ?? 0));
+        filtered.sort(
+            (a, b) => (b.responseSize ?? 0).compareTo(a.responseSize ?? 0));
         break;
       case SortOption.smallest:
-        filtered.sort((a, b) => (a.responseSize ?? 0).compareTo(b.responseSize ?? 0));
+        filtered.sort(
+            (a, b) => (a.responseSize ?? 0).compareTo(b.responseSize ?? 0));
         break;
     }
 
@@ -529,7 +595,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
       context: context,
       backgroundColor: NetifyColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(NetifyRadius.xl)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(NetifyRadius.xl)),
       ),
       builder: (context) {
         return SafeArea(
@@ -681,7 +748,8 @@ class _NetifyPanelState extends State<NetifyPanel> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Clear Logs'),
-          content: const Text('Are you sure you want to clear all network logs?'),
+          content:
+              const Text('Are you sure you want to clear all network logs?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -782,7 +850,8 @@ class _DomainGroupState extends State<_DomainGroup> {
                             ),
                             if (successCount > 0) ...[
                               const SizedBox(width: NetifySpacing.sm),
-                              _buildBadge('$successCount', NetifyColors.success),
+                              _buildBadge(
+                                  '$successCount', NetifyColors.success),
                             ],
                             if (errorCount > 0) ...[
                               const SizedBox(width: NetifySpacing.xs),
@@ -790,7 +859,8 @@ class _DomainGroupState extends State<_DomainGroup> {
                             ],
                             if (pendingCount > 0) ...[
                               const SizedBox(width: NetifySpacing.xs),
-                              _buildBadge('$pendingCount', NetifyColors.textHint),
+                              _buildBadge(
+                                  '$pendingCount', NetifyColors.textHint),
                             ],
                           ],
                         ),
@@ -808,11 +878,11 @@ class _DomainGroupState extends State<_DomainGroup> {
           if (_isExpanded) ...[
             Divider(height: 1, color: NetifyColors.divider),
             ...widget.logs.map((log) => LogListTile(
-              log: log,
-              isFavorite: widget.favoriteIds.contains(log.id),
-              onTap: () => widget.onLogTap(log),
-              onFavoriteToggle: () => widget.onFavoriteToggle(log.id),
-            )),
+                  log: log,
+                  isFavorite: widget.favoriteIds.contains(log.id),
+                  onTap: () => widget.onLogTap(log),
+                  onFavoriteToggle: () => widget.onFavoriteToggle(log.id),
+                )),
           ],
         ],
       ),

@@ -7,7 +7,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Enable edge-to-edge
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(
@@ -17,7 +17,7 @@ void main() async {
       systemNavigationBarDividerColor: Colors.transparent,
     ),
   );
-  
+
   final dio = Dio(
     BaseOptions(
       headers: {
@@ -26,7 +26,7 @@ void main() async {
       },
     ),
   );
-  
+
   // Initialize Netify with configuration
   // Entry modes: bubble (default), none
   await Netify.init(
@@ -36,13 +36,13 @@ void main() async {
       entryMode: NetifyEntryMode.bubble,
     ),
   );
-  
+
   runApp(MyApp(dio: dio));
 }
 
 class MyApp extends StatelessWidget {
   final Dio dio;
-  
+
   const MyApp({super.key, required this.dio});
 
   @override
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatefulWidget {
   final Dio dio;
-  
+
   const HomePage({super.key, required this.dio});
 
   @override
@@ -86,7 +86,8 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.bug_report),
-            onPressed: () => Netify.show(context), // Use Netify.show() for manual access
+            onPressed: () =>
+                Netify.show(context), // Use Netify.show() for manual access
             tooltip: 'Open Netify',
           ),
         ],
@@ -112,37 +113,41 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Success requests
             _buildSectionTitle('Success Requests'),
             _buildRequestButton(
               'GET Post',
               Colors.green,
-              () => _makeRequest('GET', 'https://jsonplaceholder.typicode.com/posts/1'),
+              () => _makeRequest(
+                  'GET', 'https://jsonplaceholder.typicode.com/posts/1'),
             ),
             const SizedBox(height: 8),
             _buildRequestButton(
               'GET User',
               Colors.green,
-              () => _makeRequest('GET', 'https://jsonplaceholder.typicode.com/users/1'),
+              () => _makeRequest(
+                  'GET', 'https://jsonplaceholder.typicode.com/users/1'),
             ),
             const SizedBox(height: 16),
-            
+
             // Error requests
             _buildSectionTitle('Error Requests'),
             _buildRequestButton(
               'GET 404 Error',
               Colors.red,
-              () => _makeRequest('GET', 'https://jsonplaceholder.typicode.com/posts/99999999'),
+              () => _makeRequest(
+                  'GET', 'https://jsonplaceholder.typicode.com/posts/99999999'),
             ),
             const SizedBox(height: 8),
             _buildRequestButton(
               'Network Error',
               Colors.red,
-              () => _makeRequest('GET', 'https://invalid-domain-that-does-not-exist.com/api'),
+              () => _makeRequest(
+                  'GET', 'https://invalid-domain-that-does-not-exist.com/api'),
             ),
             const SizedBox(height: 16),
-            
+
             // CRUD operations
             _buildSectionTitle('CRUD Operations'),
             _buildRequestButton(
@@ -177,10 +182,11 @@ class _HomePageState extends State<HomePage> {
             _buildRequestButton(
               'DELETE Remove',
               Colors.red.shade700,
-              () => _makeRequest('DELETE', 'https://jsonplaceholder.typicode.com/posts/1'),
+              () => _makeRequest(
+                  'DELETE', 'https://jsonplaceholder.typicode.com/posts/1'),
             ),
             const SizedBox(height: 16),
-            
+
             // Batch requests (for testing grouping)
             _buildSectionTitle('Batch Requests (Test Grouping)'),
             _buildRequestButton(
@@ -195,17 +201,17 @@ class _HomePageState extends State<HomePage> {
               _makeSameDomainRequests,
             ),
             const SizedBox(height: 24),
-            
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator()),
-            
+
+            if (_isLoading) const Center(child: CircularProgressIndicator()),
+
             const SizedBox(height: 16),
             StreamBuilder<List<NetworkLog>>(
               stream: Netify.logsStream,
               initialData: Netify.logs,
               builder: (context, snapshot) {
                 final count = snapshot.data?.length ?? 0;
-                final errorCount = snapshot.data?.where((l) => l.isError).length ?? 0;
+                final errorCount =
+                    snapshot.data?.where((l) => l.isError).length ?? 0;
                 return Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -221,12 +227,15 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   Text(
                                     '$count requests captured',
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                   if (errorCount > 0)
                                     Text(
                                       '$errorCount errors',
-                                      style: TextStyle(fontSize: 12, color: Colors.red[600]),
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.red[600]),
                                     ),
                                 ],
                               ),
@@ -244,7 +253,8 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               TextButton.icon(
                                 onPressed: Netify.clearLogs,
-                                icon: const Icon(Icons.delete_outline, size: 18),
+                                icon:
+                                    const Icon(Icons.delete_outline, size: 18),
                                 label: const Text('Clear'),
                               ),
                             ],
@@ -277,7 +287,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRequestButton(String label, Color color, VoidCallback onPressed) {
+  Widget _buildRequestButton(
+      String label, Color color, VoidCallback onPressed) {
     return ElevatedButton(
       onPressed: _isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
@@ -295,7 +306,7 @@ class _HomePageState extends State<HomePage> {
     Map<String, dynamic>? data,
   }) async {
     setState(() => _isLoading = true);
-    
+
     try {
       switch (method) {
         case 'GET':
@@ -320,7 +331,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _makeMultipleDomainRequests() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await Future.wait([
         widget.dio.get('https://jsonplaceholder.typicode.com/posts/1'),
@@ -337,7 +348,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _makeSameDomainRequests() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await Future.wait([
         widget.dio.get('https://jsonplaceholder.typicode.com/posts/1'),

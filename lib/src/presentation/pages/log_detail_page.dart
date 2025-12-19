@@ -90,16 +90,20 @@ class _LogDetailPageState extends State<LogDetailPage>
               return IconButton(
                 icon: Icon(
                   isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
-                  color: isFavorite ? NetifyColors.warning : NetifyColors.textPrimary,
+                  color: isFavorite
+                      ? NetifyColors.warning
+                      : NetifyColors.textPrimary,
                   size: 22,
                 ),
                 onPressed: () => Netify.toggleFavorite(widget.log.id),
-                tooltip: isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                tooltip:
+                    isFavorite ? 'Remove from favorites' : 'Add to favorites',
               );
             },
           ),
           IconButton(
-            icon: Icon(Icons.refresh_rounded, color: NetifyColors.textPrimary, size: 22),
+            icon: Icon(Icons.refresh_rounded,
+                color: NetifyColors.textPrimary, size: 22),
             onPressed: _replayRequest,
             tooltip: 'Replay',
           ),
@@ -113,8 +117,10 @@ class _LogDetailPageState extends State<LogDetailPage>
           controller: _tabController,
           labelColor: NetifyColors.primary,
           unselectedLabelColor: NetifyColors.textHint,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+          labelStyle:
+              const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          unselectedLabelStyle:
+              const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
           indicatorColor: NetifyColors.primary,
           indicatorWeight: 3,
           indicatorSize: TabBarIndicatorSize.label,
@@ -139,7 +145,7 @@ class _LogDetailPageState extends State<LogDetailPage>
 
   Widget _buildOverviewTab() {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    
+
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         NetifySpacing.lg,
@@ -260,7 +266,7 @@ class _LogDetailPageState extends State<LogDetailPage>
 
   Widget _buildRequestTab() {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    
+
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         NetifySpacing.lg,
@@ -296,7 +302,7 @@ class _LogDetailPageState extends State<LogDetailPage>
 
   Widget _buildResponseTab() {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    
+
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         NetifySpacing.lg,
@@ -354,7 +360,8 @@ class _LogDetailPageState extends State<LogDetailPage>
       backgroundColor: NetifyColors.surface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(NetifyRadius.xl)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(NetifyRadius.xl)),
       ),
       builder: (context) {
         return SafeArea(
@@ -412,7 +419,8 @@ class _LogDetailPageState extends State<LogDetailPage>
                     onTap: () {
                       Navigator.pop(context);
                       _copyToClipboard(
-                        const JsonEncoder.withIndent('  ').convert(widget.log.toJson()),
+                        const JsonEncoder.withIndent('  ')
+                            .convert(widget.log.toJson()),
                         'JSON',
                       );
                     },
@@ -460,13 +468,14 @@ class _LogDetailPageState extends State<LogDetailPage>
   Future<void> _shareAs(String format) async {
     String content;
     String subject = '${widget.log.method} ${widget.log.url}';
-    
+
     switch (format) {
       case 'curl':
         content = widget.log.toCurl();
         break;
       case 'json':
-        content = const JsonEncoder.withIndent('  ').convert(widget.log.toJson());
+        content =
+            const JsonEncoder.withIndent('  ').convert(widget.log.toJson());
         break;
       case 'url':
         content = widget.log.url;
@@ -475,7 +484,7 @@ class _LogDetailPageState extends State<LogDetailPage>
       default:
         return;
     }
-    
+
     await Share.share(content, subject: subject);
   }
 

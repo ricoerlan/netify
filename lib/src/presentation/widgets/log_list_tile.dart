@@ -30,8 +30,9 @@ class LogListTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: NetifyColors.surface,
           borderRadius: BorderRadius.circular(NetifyRadius.lg),
-          border: isFavorite 
-              ? Border.all(color: NetifyColors.warning.withValues(alpha: 0.3), width: 1)
+          border: isFavorite
+              ? Border.all(
+                  color: NetifyColors.warning.withValues(alpha: 0.3), width: 1)
               : null,
           boxShadow: [
             BoxShadow(
@@ -66,7 +67,8 @@ class LogListTile extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: NetifyColors.getMethodColor(log.method).withValues(alpha: 0.1),
+            color:
+                NetifyColors.getMethodColor(log.method).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(NetifyRadius.sm),
           ),
           child: Text(

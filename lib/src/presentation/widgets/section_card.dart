@@ -49,13 +49,13 @@ class _SectionCardState extends State<SectionCard> {
                 ),
                 if (widget.showCopyButton)
                   GestureDetector(
-                      onTap: () => _copyToClipboard(context),
-                      child: Icon(
-                        Icons.copy,
-                        size: 18,
-                        color: NetifyColors.textSecondary,
-                      ),
+                    onTap: () => _copyToClipboard(context),
+                    child: Icon(
+                      Icons.copy,
+                      size: 18,
+                      color: NetifyColors.textSecondary,
                     ),
+                  ),
               ],
             ),
           ),
@@ -105,7 +105,7 @@ class _SectionCardState extends State<SectionCard> {
     // A better approach would be using LayoutBuilder, but simple line count check works for monospace.
     final lineCount = widget.content.split('\n').length;
     if (lineCount > _maxLines) return true;
-    
+
     // If it's a long single line string, let it wrap (handled by SelectableText defaults)
     // but maybe we want to expand that too? For now, focused on vertical height.
     return widget.content.length > 300; // Fallback length check

@@ -23,21 +23,22 @@ class NetifyInterceptor extends Interceptor {
 
     options.extra['netify_log_id'] = log.id;
     options.extra['netify_request_time'] = log.requestTime;
-    
+
     logRepository.addLog(log);
-    
+
     handler.next(options);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     final logId = response.requestOptions.extra['netify_log_id'] as String?;
-    final requestTime = response.requestOptions.extra['netify_request_time'] as DateTime?;
-    
+    final requestTime =
+        response.requestOptions.extra['netify_request_time'] as DateTime?;
+
     if (logId != null && requestTime != null) {
       final responseTime = DateTime.now();
       final duration = responseTime.difference(requestTime);
-      
+
       final existingLog = logRepository.logs.firstWhere(
         (log) => log.id == logId,
         orElse: () => NetworkLog(
@@ -67,12 +68,13 @@ class NetifyInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final logId = err.requestOptions.extra['netify_log_id'] as String?;
-    final requestTime = err.requestOptions.extra['netify_request_time'] as DateTime?;
-    
+    final requestTime =
+        err.requestOptions.extra['netify_request_time'] as DateTime?;
+
     if (logId != null && requestTime != null) {
       final responseTime = DateTime.now();
       final duration = responseTime.difference(requestTime);
-      
+
       final existingLog = logRepository.logs.firstWhere(
         (log) => log.id == logId,
         orElse: () => NetworkLog(
@@ -86,14 +88,13 @@ class NetifyInterceptor extends Interceptor {
       final updatedLog = existingLog.copyWith(
         statusCode: err.response?.statusCode,
         statusMessage: err.response?.statusMessage,
-        responseHeaders: err.response != null 
-            ? _convertHeaders(err.response!.headers.map) 
+        responseHeaders: err.response != null
+            ? _convertHeaders(err.response!.headers.map)
             : null,
         responseBody: err.response?.data,
         responseTime: responseTime,
-        responseSize: err.response != null 
-            ? _calculateSize(err.response!.data) 
-            : null,
+        responseSize:
+            err.response != null ? _calculateSize(err.response!.data) : null,
         duration: duration,
         error: _formatError(err),
       );
@@ -130,41 +131,48 @@ class NetifyInterceptor extends Interceptor {
 
   String _formatError(DioException err) {
     final buffer = StringBuffer();
-    
-    buffer.writeln('This exception was thrown because the response has a status code of ${err.response?.statusCode ?? "unknown"} and RequestOptions.validateStatus was configured to throw for this status code.');
+
+    buffer.writeln(
+        'This exception was thrown because the response has a status code of ${err.response?.statusCode ?? "unknown"} and RequestOptions.validateStatus was configured to throw for this status code.');
     buffer.writeln();
-    
+
     if (err.response?.statusCode != null) {
       final code = err.response!.statusCode!;
       String meaning;
-      
+
       if (code == 400) {
-        meaning = 'Bad Request - the server cannot process the request due to client error';
+        meaning =
+            'Bad Request - the server cannot process the request due to client error';
       } else if (code == 401) {
         meaning = 'Unauthorized - authentication is required';
       } else if (code == 403) {
         meaning = 'Forbidden - the server refuses to authorize the request';
       } else if (code == 404) {
-        meaning = 'Not Found - the request contains bad syntax or cannot be fulfilled';
+        meaning =
+            'Not Found - the request contains bad syntax or cannot be fulfilled';
       } else if (code == 500) {
-        meaning = 'Internal Server Error - the server encountered an unexpected condition';
+        meaning =
+            'Internal Server Error - the server encountered an unexpected condition';
       } else if (code >= 400 && code < 500) {
-        meaning = 'Client error - the request contains bad syntax or cannot be fulfilled';
+        meaning =
+            'Client error - the request contains bad syntax or cannot be fulfilled';
       } else if (code >= 500) {
         meaning = 'Server error - the server failed to fulfill a valid request';
       } else {
         meaning = 'Unknown error';
       }
-      
+
       buffer.writeln('The status code of $code has the following meaning:');
       buffer.writeln('"$meaning"');
       buffer.writeln();
     }
-    
-    buffer.writeln('Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status');
+
+    buffer.writeln(
+        'Read more about status codes at https://developer.mozilla.org/en-US/docs/Web/HTTP/Status');
     buffer.writeln();
-    buffer.writeln('In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.');
-    
+    buffer.writeln(
+        'In order to resolve this exception you typically have either to verify and fix your request code or you have to fix the server code.');
+
     return buffer.toString();
   }
 }

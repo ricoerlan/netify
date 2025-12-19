@@ -3,6 +3,16 @@
 ### Fixed
 
 - Fixed README screenshots not displaying on pub.dev (using absolute URLs)
+- Fixed code formatting issues for pub.dev scoring
+
+### Updated
+
+- Updated dependencies to latest versions:
+  - dio: ^5.9.0
+  - share_plus: ^12.0.1
+  - package_info_plus: ^9.0.0
+- Added explicit Android/iOS platform support
+- Added dartdoc comments to public API (20%+ coverage)
 
 ## 1.0.0
 

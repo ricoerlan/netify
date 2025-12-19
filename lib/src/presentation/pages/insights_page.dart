@@ -18,7 +18,8 @@ class InsightsPage extends StatelessWidget {
           icon: Icon(Icons.arrow_back_rounded, color: NetifyColors.textPrimary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Performance Insights', style: NetifyTextStyles.appBarTitle),
+        title:
+            Text('Performance Insights', style: NetifyTextStyles.appBarTitle),
       ),
       body: StreamBuilder<List<NetworkLog>>(
         stream: Netify.logsStream,
@@ -93,7 +94,9 @@ class InsightsPage extends StatelessWidget {
             icon: Icons.error_outline_rounded,
             label: 'Error Rate',
             value: '${stats.errorRate.toStringAsFixed(1)}%',
-            color: stats.errorRate > 10 ? NetifyColors.error : NetifyColors.success,
+            color: stats.errorRate > 10
+                ? NetifyColors.error
+                : NetifyColors.success,
           ),
         ),
         const SizedBox(width: NetifySpacing.md),
@@ -182,12 +185,16 @@ class InsightsPage extends StatelessWidget {
           Divider(height: NetifySpacing.lg, color: NetifyColors.divider),
           _MetricRow(
             label: 'Fastest Response',
-            value: stats.fastestResponse != null ? '${stats.fastestResponse}ms' : '-',
+            value: stats.fastestResponse != null
+                ? '${stats.fastestResponse}ms'
+                : '-',
           ),
           Divider(height: NetifySpacing.lg, color: NetifyColors.divider),
           _MetricRow(
             label: 'Slowest Response',
-            value: stats.slowestResponse != null ? '${stats.slowestResponse}ms' : '-',
+            value: stats.slowestResponse != null
+                ? '${stats.slowestResponse}ms'
+                : '-',
           ),
           Divider(height: NetifySpacing.lg, color: NetifyColors.divider),
           _MetricRow(
@@ -242,7 +249,7 @@ class InsightsPage extends StatelessWidget {
         final ms = log.duration!.inMilliseconds;
         totalResponseTime += ms;
         responseTimeCount++;
-        
+
         if (fastestResponse == null || ms < fastestResponse) {
           fastestResponse = ms;
         }
@@ -270,13 +277,16 @@ class InsightsPage extends StatelessWidget {
       clientErrorCount: clientErrorCount,
       serverErrorCount: serverErrorCount,
       pendingCount: pendingCount,
-      avgResponseTime: responseTimeCount > 0 ? totalResponseTime / responseTimeCount : 0,
-      errorRate: completedRequests > 0 ? (errorCount / completedRequests) * 100 : 0,
+      avgResponseTime:
+          responseTimeCount > 0 ? totalResponseTime / responseTimeCount : 0,
+      errorRate:
+          completedRequests > 0 ? (errorCount / completedRequests) * 100 : 0,
       totalDataUsage: totalDataUsage,
       methodCounts: methodCounts,
       fastestResponse: fastestResponse,
       slowestResponse: slowestResponse,
-      avgResponseSize: responseSizeCount > 0 ? totalResponseSize / responseSizeCount : 0,
+      avgResponseSize:
+          responseSizeCount > 0 ? totalResponseSize / responseSizeCount : 0,
     );
   }
 
@@ -438,7 +448,7 @@ class _ProgressRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percentage = total > 0 ? value / total : 0.0;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -448,7 +458,8 @@ class _ProgressRow extends StatelessWidget {
             Text(label, style: NetifyTextStyles.bodySmall),
             Text(
               '$value (${(percentage * 100).toStringAsFixed(1)}%)',
-              style: NetifyTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
+              style: NetifyTextStyles.bodySmall
+                  .copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
