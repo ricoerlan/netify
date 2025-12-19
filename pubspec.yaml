@@ -2,7 +2,7 @@ name: netify
 description: >-
   A lightweight, debug-only network inspector for Flutter apps using Dio HTTP client.
   Features a modern UI, request grouping, favorites, dark mode, and share as image.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/ricoerlan/netify
 repository: https://github.com/ricoerlan/netify
 issue_tracker: https://github.com/ricoerlan/netify/issues
