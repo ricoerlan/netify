@@ -485,7 +485,12 @@ class _LogDetailPageState extends State<LogDetailPage>
         return;
     }
 
-    await Share.share(content, subject: subject);
+    await SharePlus.instance.share(
+      ShareParams(
+        text: content,
+        subject: subject,
+      ),
+    );
   }
 
   void _copyToClipboard(String content, String label) {
@@ -519,9 +524,11 @@ class _LogDetailPageState extends State<LogDetailPage>
       final file = File('${tempDir.path}/netify_log_$timestamp.png');
       await file.writeAsBytes(image);
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: '${widget.log.method} ${widget.log.url}',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: '${widget.log.method} ${widget.log.url}',
+        ),
       );
     } catch (e) {
       if (mounted) {

@@ -718,9 +718,11 @@ class _NetifyPanelState extends State<NetifyPanel> {
       final file = File('${directory.path}/netify_logs_$timestamp.$extension');
       await file.writeAsString(content);
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: 'Netify Logs ($extension)',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: 'Netify Logs ($extension)',
+        ),
       );
     } catch (e) {
       if (mounted) {
@@ -736,9 +738,11 @@ class _NetifyPanelState extends State<NetifyPanel> {
 
   Future<void> _shareLogs() async {
     final json = Netify.exportAsJson();
-    await Share.share(
-      json,
-      subject: 'Netify Network Logs',
+    await SharePlus.instance.share(
+      ShareParams(
+        text: json,
+        subject: 'Netify Network Logs',
+      ),
     );
   }
 

@@ -35,7 +35,7 @@
 - 🔄 cURL generation for any request
 - 🔁 Replay requests
 - 📊 Detailed metrics (time, size, duration)
-- 🪶 Lightweight (~1.5MB APK impact)
+- 🪶 Lightweight
 
 ### Architecture
 

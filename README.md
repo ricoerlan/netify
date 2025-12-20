@@ -19,7 +19,7 @@ A lightweight, debug-only network inspector for Flutter apps using Dio HTTP clie
 - 🔁 **Replay Requests** - Re-send any captured request
 - 🌲 **Tree-Shakable** - Zero footprint in release builds
 - 📊 **Detailed Metrics** - Request time, response size, duration with color-coded indicators
-- 🪶 **Lightweight** - Minimal dependencies (~1.5MB APK impact)
+- 🪶 **Lightweight** - Minimal dependencies
 
 ## 📸 Screenshots
 
