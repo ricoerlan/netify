@@ -1,3 +1,15 @@
+## 1.0.3
+
+### Fixed
+
+- Fixed deprecated Share API usage warnings
+- Replaced Share.share() and Share.shareXFiles() with SharePlus.instance.share()
+- Used correct ShareParams constructor with proper parameter names
+
+### Updated
+
+- Removed APK impact size from README Lightweight feature description
+
 ## 1.0.2
 
 ### Fixed
